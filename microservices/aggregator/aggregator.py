@@ -7,9 +7,13 @@ client_weights = []
 @app.route('/submit_weights', methods=['POST'])
 def submit_weights():
     global client_weights
-    weights = request.json['weights']
-    client_weights.append([np.array(w) for w in weights])
-    return jsonify({"status": "success"})
+    try:
+        weights = request.get_json()  # Correctly parses the JSON body.
+        client_weights.append([np.array(w) for w in weights])  # Convert each weight to a NumPy array.
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "failed", "error": str(e)}), 400
+
 
 @app.route('/aggregate', methods=['GET'])
 def aggregate_weights():
